@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hospital Waste Optimizer</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #3d8e4d;
+        color: white;
+      }
+
+      /* HERO SECTION */
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 80px 60px;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+
+      .hero-left {
+        flex: 1;
+        min-width: 320px;
+        max-width: 450px;
+      }
+
+      .hero-logo {
+        width: 90px;
+        height: 90px;
+        background: url("logo.png") center/contain no-repeat;
+        margin-bottom: 20px;
+      }
+
+      .hero-title {
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 15px;
+        line-height: 1.2;
+      }
+
+      .hero-desc {
+        font-size: 18px;
+        line-height: 1.6;
+        opacity: 0.95;
+      }
+
+      .hero-right {
+        flex: 1;
+        min-width: 350px;
+        max-width: 520px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .hero-right img {
+        width: 100%;
+        max-width: 420px;
+        height: auto;
+        display: block;
+      }
+
+      /* INFO SECTION */
+      .info-section {
+        background: white;
+        color: #222;
+        padding: 50px 60px;
+        margin-top: 40px;
+        border-radius: 40px 40px 0 0;
+      }
+
+      .info-title {
+        color: #3d8e4d;
+        font-size: 26px;
+        font-weight: 800;
+        margin-bottom: 20px;
+      }
+
+      .info-list {
+        font-size: 18px;
+        line-height: 1.9;
+        padding-left: 20px;
+        max-width: 700px;
+      }
+
+      /* CTA BUTTON */
+      .cta-wrapper {
+        text-align: center;
+        padding: 40px 0 70px;
+        background: white;
+      }
+
+      .cta-btn {
+        display: inline-block;
+        background: #3d8e4d;
+        color: white;
+        padding: 16px 40px;
+        border-radius: 10px;
+        font-size: 20px;
+        font-weight: bold;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      .cta-btn:hover {
+        background: #2f6f3d;
+      }
+
+      /* MOBILE RESPONSIVE */
+      @media (max-width: 900px) {
+        .hero {
+          padding: 60px 30px;
+        }
+
+        .hero-right img {
+          max-width: 320px;
+        }
+
+        .info-section {
+          padding: 40px 30px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- HERO -->
+    <div class="hero">
+      <!-- LEFT CONTENT -->
+      <div class="hero-left">
+        <div class="hero-logo"></div>
+
+        <div class="hero-title">Hospital Waste Optimizer</div>
+
+        <div class="hero-desc">
+          A clean, efficient solution designed to streamline medical waste
+          routing, optimize truck allocation, and ensure hospital compliance—all
+          in one place.
+        </div>
+      </div>
+
+      <!-- RIGHT ILLUSTRATION -->
+      <div class="hero-right">
+        <img src="Truck.png" alt="Medical Waste Illustration" />
+      </div>
+    </div>
+
+    <!-- INFO SECTION -->
+    <div class="info-section">
+      <div class="info-title">Why This Tool?</div>
+
+      <ul class="info-list">
+        <li>Reduces delays in medical waste pickup</li>
+        <li>Improves compliance with hospital safety protocols</li>
+        <li>Optimizes truck movement based on capacity and waste type</li>
+        <li>Provides accurate sanitization wait-time tracking</li>
+        <li>Generates clean JSON for dashboards or Unity simulations</li>
+      </ul>
+    </div>
+
+    <!-- BOTTOM CTA -->
+    <div class="cta-wrapper">
+      <a href="index.html" class="cta-btn">Enter as Hospital</a>
+    </div>
+  </body>
+</html>

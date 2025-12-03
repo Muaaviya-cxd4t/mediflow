@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Waste Optimizer</title>
+
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+        background: #ffffff;
+        color: #222;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: auto;
+      }
+
+      h2,
+      h3 {
+        color: #3d8e4d;
+        border-left: 6px solid #3d8e4d;
+        padding-left: 10px;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+      }
+
+      button {
+        padding: 12px 16px;
+        border: 0;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .primary {
+        background: #3d8e4d;
+        color: white;
+      }
+
+      .block {
+        display: grid;
+        gap: 15px;
+        grid-template-columns: 1fr 150px;
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 12px;
+        border: 1px solid #e0e0e0;
+      }
+
+      pre {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        overflow-x: auto;
+      }
+
+      .btn-row {
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Waste Input</h2>
+
+      <label>Enter number of waste entries:</label>
+      <input id="num" type="number" min="1" />
+
+      <div class="btn-row">
+        <button id="gen" class="primary">Generate</button>
+      </div>
+
+      <div id="blocks"></div>
+
+      <h3>Truck Settings</h3>
+
+      <label>Number of trucks (1–4):</label>
+      <input id="tcount" type="number" min="1" max="4" value="4" />
+
+      <label>Truck capacity (max 500kg):</label>
+      <input id="cap" type="number" min="1" max="500" value="500" />
+
+      <div class="btn-row">
+        <button id="compute" class="primary">Optimize</button>
+      </div>
+
+      <h3>JSON Output</h3>
+      <pre id="json">{}</pre>
+
+      <h3>Server Output</h3>
+      <pre id="server">No response</pre>
+    </div>
+
+    <script>
+      // sanitation rules
+      const SAN = {
+        "Infectious Waste": { wait: 15, dump: true },
+        "Sharps Waste": { wait: 30, dump: false },
+        "Chemical Waste": { wait: 40, dump: true },
+        "General Waste": { wait: 0, dump: true },
+      };
+
+      const numEl = document.getElementById("num");
+      const genEl = document.getElementById("gen");
+      const blocksEl = document.getElementById("blocks");
+      const jsonEl = document.getElementById("json");
+      const serverEl = document.getElementById("server");
+
+      // generate form blocks
+      genEl.onclick = () => {
+        const n = Number(numEl.value);
+        blocksEl.innerHTML = "";
+        if (!n || n < 1) return alert("Enter valid number");
+
+        for (let i = 0; i < n; i++) {
+          const div = document.createElement("div");
+          div.className = "block";
+          div.innerHTML = `
+          <div>
+            <label>Waste Type</label>
+            <select class="type">
+              <option>Infectious Waste</option>
+              <option>Sharps Waste</option>
+              <option>Chemical Waste</option>
+              <option>General Waste</option>
+            </select>
+          </div>
+          <div>
+            <label>Quantity (kg)</label>
+            <input class="qty" type="number" min="1" value="1">
+          </div>
+        `;
+          blocksEl.appendChild(div);
+        }
+      };
+
+      // compute truck routes (UNCHANGED)
+      document.getElementById("compute").onclick = () => {
+        const blocks = [...document.querySelectorAll(".block")];
+        if (!blocks.length) return alert("Create entries first");
+
+        const trucksN = Math.min(
+          4,
+          Math.max(1, Number(document.getElementById("tcount").value))
+        );
+        const cap = Math.min(
+          500,
+          Math.max(1, Number(document.getElementById("cap").value))
+        );
+
+        const NODE_NAMES = ["J", "S", "A", "D"];
+
+        const entries = blocks.map((b, i) => ({
+          name: NODE_NAMES[i] || "X" + i,
+          type: b.querySelector(".type").value,
+          qty: Number(b.querySelector(".qty").value),
+        }));
+
+        const trucks = Array.from({ length: trucksN }, (_, i) => ({
+          id: i + 1,
+          used: 0,
+          route: [],
+        }));
+
+        for (const e of entries) {
+          const spec = SAN[e.type];
+          const t = trucks.reduce((a, b) => (a.used <= b.used ? a : b));
+
+          if (t.used + e.qty <= cap) {
+            t.used += e.qty;
+            t.route.push({ point: e.name, wait: spec.wait });
+            t.route.push({
+              point: spec.dump ? "Dump" : "Sanitation",
+              wait: 0,
+            });
+          }
+        }
+
+        const active = trucks.filter((t) => t.route.length > 0).length;
+
+        const output = {
+          activeTrucks: active,
+          trucks: trucks.map((t) => ({ id: t.id, route: t.route })),
+        };
+
+        jsonEl.textContent = JSON.stringify(output, null, 2);
+
+        fetch("http://localhost:5000/receive", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(output),
+        })
+          .then((r) => r.json())
+          .then((d) => (serverEl.textContent = JSON.stringify(d, null, 2)))
+          .catch((err) => (serverEl.textContent = "Error: " + err));
+      };
+    </script>
+  </body>
+</html>
