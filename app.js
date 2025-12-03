@@ -33,7 +33,7 @@ const server = http.createServer((req, res) => {
 
   // ------------ SERVE STATIC ------------
   if (req.method === "GET") {
-    const urlPath = req.url === "/" ? "/index.html" : req.url;
+    const urlPath = req.url === "/" ? "/landing.html" : req.url;
     const filePath = path.join(BASE, urlPath);
 
     fs.readFile(filePath, (err, data) => {
@@ -94,3 +94,4 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`Server running → http://localhost:${PORT}`);
 });
+
